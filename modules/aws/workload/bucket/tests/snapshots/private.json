@@ -1,0 +1,35 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RestrictToTLSRequestsOnly",
+      "Effect": "Deny",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::order-assets-us-east-1-00000000000/*",
+        "arn:aws:s3:::order-assets-us-east-1-00000000000"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
+    },
+    {
+      "Sid": "RequireTLS12",
+      "Effect": "Deny",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::order-assets-us-east-1-00000000000/*",
+        "arn:aws:s3:::order-assets-us-east-1-00000000000"
+      ],
+      "Principal": "*",
+      "Condition": {
+        "NumericLessThan": {
+          "s3:TlsVersion": "1.2"
+        }
+      }
+    }
+  ]
+}

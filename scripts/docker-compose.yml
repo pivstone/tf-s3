@@ -1,0 +1,27 @@
+services:
+  stackport:
+    image: davireis/stackport:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_ENDPOINT_URL=http://ministack:4566
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_ACCOUNT_ID=000000000000
+    restart: unless-stopped
+    depends_on:
+      ministack:
+        condition: service_healthy
+
+  ministack:
+    image: ministackorg/ministack:latest
+    environment:
+      - AUTH=true
+    ports:
+      - "4566:4566"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4566/_ministack/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
