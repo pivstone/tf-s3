@@ -6,6 +6,12 @@ terraform {
       version = "~> 6.0"
     }
   }
+  # 
+  # backend "s3" {
+  #   bucket = "tf-bucket"
+  #   key    = "team/order"
+  #   region = "us-east-1"
+  # }
 }
 
 # Configure the AWS Provider
