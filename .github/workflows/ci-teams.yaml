@@ -26,7 +26,7 @@ jobs:
 
       - name: List changed teams
         id: changes
-        uses: "./.github/actions/list-change/action.yaml"
+        uses: "./.github/actions/list-change"
         with: 
           path-filter: 'teams'
   check:
@@ -43,6 +43,6 @@ jobs:
         - uses: hashicorp/setup-terraform@v4
         - run: terraform init
           working-directory: teams/${{matrix.team}}
-        - run: terraform validation
+        - run: terraform validate
           working-directory: teams/${{matrix.team}}
       
