@@ -1,5 +1,5 @@
 run "setup" {
-  # Start MiniStack
+  # Start the MiniStack
 
   module {
     source = "./testing/setup"
