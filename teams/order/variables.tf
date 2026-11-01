@@ -18,7 +18,7 @@ variable "buckets" {
   }))
 
   validation {
-    condition     = length(var.buckets) > 1
+    condition     = length(var.buckets) >= 1
     error_message = "At least one bucket is required"
   }
 }

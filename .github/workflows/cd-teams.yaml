@@ -31,15 +31,16 @@ jobs:
         directory: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
     permissions:
       contents: read
+      id-token: write
     defaults:
       run:
-        working-directory: ${{ matrix.directory }}
+        working-directory: teams/${{ matrix.directory }}
     steps:
         - uses: actions/checkout@v6
         - name: Configure AWS Credentials
           uses: aws-actions/configure-aws-credentials@v6
           with:
-            aws-region: us-east=1
+            aws-region: us-east-1
             role-to-assume: arn:aws:iam::000000000000:role/GithubActionRole
 
         - uses: hashicorp/setup-terraform@v4
