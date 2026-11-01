@@ -21,6 +21,7 @@ runs:
         EVENT_NAME: ${{ github.event_name }}
         BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        PATH_FILTER: ${{ inputs.path-filter }}
       run: |
         if [[ "$EVENT_NAME" == "pull_request" ]]; then
           range="$BASE_SHA...$HEAD_SHA"
@@ -28,5 +29,8 @@ runs:
           range="$BASE_SHA..$HEAD_SHA"
         fi
 
-        echo 'changes=$(git diff --name-only --no-renames "$range"  -- ${{inputs.ath-filter}} | jq  --raw-input .  | jq --slurp .) >> "$GITHUB_OUTPUT"
+        changes=$(git diff --name-only --no-renames "$range" -- "$PATH_FILTER/" |
+          awk -F/ 'NF >= 3 { print $2 }' |
+          jq -Rsc 'split("\n") | map(select(length > 0)) | unique')
+        printf 'changes=%s\n' "$changes" >> "$GITHUB_OUTPUT"
       
