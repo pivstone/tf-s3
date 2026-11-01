@@ -1,11 +1,16 @@
 name: CI(Modules)
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - modules/aws/workload/bucket/**
   push:
     branches:
       - main
     paths:
-      - modules/aws/workload/bucket
+      - modules/aws/workload/bucket/**
 
 jobs:
   checks:
