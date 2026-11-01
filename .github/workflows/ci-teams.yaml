@@ -27,8 +27,8 @@ jobs:
       - name: List changed teams
         id: changes
         uses: "./.github/actions/list-change"
-        with: 
-          path-filter: 'teams'
+        with:
+          path-filter: "teams"
   check:
     runs-on: ubuntu-24.04-arm
     needs: define-matrix
@@ -40,9 +40,12 @@ jobs:
     defaults:
       run:
         working-directory: teams/${{ matrix.directory }}
+    env:
+      AWS_ENDPOINT_URL: http://localhost:4566/
     steps:
-        - uses: actions/checkout@v6
-        - uses: hashicorp/setup-terraform@v4
-        - run: terraform init
-        - run: terraform validate
-      
+      - uses: actions/checkout@v6
+      - uses: hashicorp/setup-terraform@v4
+      - run: docker run -p 4566:4566 ministackorg/ministack
+      - run: terraform init
+      - run: terraform validate
+      - run: terraform plan -input=false
