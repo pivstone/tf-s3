@@ -1,0 +1,24 @@
+# Downloaded providers and modules
+.terraform/
+
+# Local state: can contain sensitive values
+*.tfstate
+*.tfstate.*
+
+# Saved plans and crash logs
+*.tfplan
+crash.log
+crash.*.log
+
+# Local variable values
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+.DS_Store
