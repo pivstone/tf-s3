@@ -2,8 +2,8 @@ name: List-Changes
 description: list change folder
 inputs:
   path-filter:
+    description: 'the path filter'
     required: true
-    type: string
 outputs:
   changes:
     description: "The list of changes path"
