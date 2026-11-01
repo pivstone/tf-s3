@@ -3,6 +3,9 @@ buckets = [{
   type = "public"
   }, {
   name = "private-file"
-  type = "private"
+  type = "private",
+  },
+  {
+    name = "Invalid-Bucjet"
+    type = "private"
 }]
-  
