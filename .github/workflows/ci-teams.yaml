@@ -1,0 +1,48 @@
+name: CI(Teams)
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - teams/**
+      - .github/workflows/ci-teams.yaml
+  push:
+    branches:
+      - main
+    paths:
+      - teams/**
+      - .github/workflows/ci-teams.yaml
+
+jobs:
+  define-matrix:
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: List changed teams
+        id: changes
+        uses: "./.github/workflows/actions/list-change/action.yaml"
+        with: 
+          path-filter: 'teams'
+  check:
+    runs-on: ubuntu-24.04-arm
+    needs: define-matrix
+    strategy:
+      matrix:
+        team: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
+    permissions:
+      contents: read
+      
+    steps:
+        - uses: actions/checkout@v6
+        - uses: hashicorp/setup-terraform@v4
+        - run: terraform init
+          working-directory: teams/${{matrix.team}}
+        - run: terraform validation
+          working-directory: teams/${{matrix.team}}
+      

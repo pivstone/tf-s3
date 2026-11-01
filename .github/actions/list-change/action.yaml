@@ -1,0 +1,32 @@
+name: List-Changes
+description: list change folder
+inputs:
+  path-filter:
+    required: true
+    type: string
+outputs:
+  changes:
+    description: "The list of changes path"
+    value: ${{ steps.changes.outputs.changes }}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - name: List changed
+      id: changes
+      shell: bash
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: |
+        if [[ "$EVENT_NAME" == "pull_request" ]]; then
+          range="$BASE_SHA...$HEAD_SHA"
+        else
+          range="$BASE_SHA..$HEAD_SHA"
+        fi
+
+        echo 'changes=$(git diff --name-only --no-renames "$range"  -- ${{inputs.ath-filter}} | jq  --raw-input .  | jq --slurp .) >> "$GITHUB_OUTPUT"
+      
