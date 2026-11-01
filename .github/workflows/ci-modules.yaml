@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - modules/aws/workload/bucket/**
+      - .github/workflows/ci-modules.yaml
   push:
     branches:
       - main
     paths:
       - modules/aws/workload/bucket/**
+      - .github/workflows/ci-modules.yaml
 
 jobs:
   checks:
@@ -20,10 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: hashicorp/setup-terraform@v4
-      - run:
-        shell: terraform init
+      - run: terraform init
         working-directory: ./modules/aws/workload/bucket
 
-      - run:
-        shell: terraform test
+      - run: terraform test
         working-directory: ./modules/aws/workload/bucket
