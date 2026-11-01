@@ -34,15 +34,15 @@ jobs:
     needs: define-matrix
     strategy:
       matrix:
-        team: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
+        directory: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
     permissions:
       contents: read
-      
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
     steps:
         - uses: actions/checkout@v6
         - uses: hashicorp/setup-terraform@v4
         - run: terraform init
-          working-directory: teams/${{matrix.team}}
         - run: terraform validate
-          working-directory: teams/${{matrix.team}}
       

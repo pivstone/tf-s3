@@ -1,0 +1,48 @@
+name: CD(Deploy Teams)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - teams/**
+      - .github/workflows/cd-teams.yaml
+
+jobs:
+  define-matrix:
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: List changed teams
+        id: changes
+        uses: "./.github/actions/list-change"
+        with: 
+          path-filter: 'teams'
+  check:
+    runs-on: ubuntu-24.04-arm
+    needs: define-matrix
+    strategy:
+      matrix:
+        directory: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+        - uses: actions/checkout@v6
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v6
+          with:
+            aws-region: us-east=1
+            role-to-assume: arn:aws:iam::000000000000:role/GithubActionRole
+
+        - uses: hashicorp/setup-terraform@v4
+        - run: terraform init
+        - run: terraform apply -auto-approve
+      
