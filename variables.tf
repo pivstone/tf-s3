@@ -15,6 +15,7 @@ variable "buckets" {
   type = list(object({
     name = string
     type = string
+    tags = map(string)
   }))
 
   validation {
@@ -24,6 +25,6 @@ variable "buckets" {
 }
 
 variable "team_name" {
-  type = string
+  type        = string
   description = "Team name"
 }

@@ -23,9 +23,9 @@ locals {
 resource "aws_s3_bucket" "this" {
   bucket = local.bucket_name
 
-  tags = {
+  tags = merge(var.tags, {
     Team = local.team_name
-  }
+  })
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {

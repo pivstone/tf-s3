@@ -54,3 +54,8 @@ variable "role_id" {
   type        = string
 }
 
+variable "tags" {
+  type        = map(string)
+  description = "Bucket Tags"
+  default     = {}
+}

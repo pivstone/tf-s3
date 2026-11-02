@@ -43,6 +43,7 @@ module "buckets" {
   }
   name                          = each.value.name
   type                          = each.value.type
+  tags                          = each.value.tags
   attach_tls_only_policy        = var.attach_tls_only_policy
   attach_tls_12_required_policy = var.attach_tls_12_required_policy
   role_id                       = aws_iam_role.role.id
