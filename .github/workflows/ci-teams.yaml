@@ -34,12 +34,9 @@ jobs:
     needs: define-matrix
     strategy:
       matrix:
-        directory: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
+        team: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
     permissions:
       contents: read
-    defaults:
-      run:
-        working-directory: teams/${{ matrix.directory }}
     env:
       AWS_ENDPOINT_URL: http://localhost:4566/
       AWS_ACCESS_KEY_ID: test
@@ -49,6 +46,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: hashicorp/setup-terraform@v4
       - run: docker run -p 4566:4566 -d ministackorg/ministack 
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform plan -input=false
+      - run: aws s3api create-bucket --bucket tf-bucket
+      - run: terraform init -reconfigure -backend-config "bucket=tf-bucket"  -backend-config "key=teams/${{matrix.team}}.tfstate"  -var-file teams/${{matrix.team}}/terraform.tfvars
+      - run: terraform validate -var-file teams/${{matrix.team}}/terraform.tfvars
+      - run: terraform plan -input=false -var-file teams/${{matrix.team}}/terraform.tfvars

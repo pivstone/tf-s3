@@ -5,4 +5,5 @@ buckets = [{
   name = "private-file"
   type = "private"
 }]
-  
+
+team_name = "order"

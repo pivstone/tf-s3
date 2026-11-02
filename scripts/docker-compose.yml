@@ -16,8 +16,6 @@ services:
 
   ministack:
     image: ministackorg/ministack:latest
-    environment:
-      - AUTH=true
     ports:
       - "4566:4566"
     healthcheck:

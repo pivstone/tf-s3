@@ -28,13 +28,10 @@ jobs:
     needs: define-matrix
     strategy:
       matrix:
-        directory: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
+        team: ${{ fromJSON(needs.define-matrix.outputs.changes) }}
     permissions:
       contents: read
       id-token: write
-    defaults:
-      run:
-        working-directory: teams/${{ matrix.directory }}
     steps:
         - uses: actions/checkout@v6
         - name: Configure AWS Credentials
@@ -44,6 +41,6 @@ jobs:
             role-to-assume: arn:aws:iam::000000000000:role/GithubActionRole
 
         - uses: hashicorp/setup-terraform@v4
-        - run: terraform init
-        - run: terraform apply -auto-approve
+        - run: terraform init -reconfigure -backend-config "bucket=tf-bucket"  -backend-config "key=teams/${{matrix.team}}.tfstate"  -var-file teams/${{matrix.team}}/terraform.tfvars
+        - run: terraform apply -auto-approve -var-file teams/${{matrix.team}}/terraform.tfvars
       

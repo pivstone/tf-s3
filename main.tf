@@ -6,22 +6,16 @@ terraform {
       version = "~> 6.0"
     }
   }
-  # 
-  # backend "s3" {
-  #   bucket = "tf-bucket"
-  #   key    = "team/order"
-  #   region = "us-east-1"
-  # }
+
+  backend "s3" {
+    use_lockfile = true
+  }
 }
 
 # Configure the AWS Provider
 
 provider "aws" {
   region = "us-east-1"
-}
-
-locals {
-  team_name = basename(abspath(path.root))
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -36,12 +30,13 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "role" {
-  name               = "${local.team_name}-s3-role"
+  name               = "${var.team_name}-s3-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 module "buckets" {
-  source = "../../modules/aws/workload/bucket"
+  team_name = var.team_name
+  source    = "./modules/aws/workload/bucket"
   for_each = {
     for index, bucket in var.buckets :
     bucket.name => bucket

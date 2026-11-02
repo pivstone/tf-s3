@@ -22,3 +22,8 @@ variable "buckets" {
     error_message = "At least one bucket is required"
   }
 }
+
+variable "team_name" {
+  type = string
+  description = "Team name"
+}
