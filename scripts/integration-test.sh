@@ -4,17 +4,20 @@ export AWS_ENDPOINT_URL=http://localhost:4566/
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1
+export TF_BUCKET_NAME=tf-bucket
 
 # setup
-(cd ./scripts && docker compose up -d)
+if lsof -Pi :4566 -sTCP:LISTEN -t >/dev/null ; then
+    echo "minstack is running"
+else
+    (cd ./scripts && docker compose up -d)
+fi
 
-# apply tf changes
-cd teams/order
+aws s3api wait bucket-not-exists --bucket $TF_BUCKET_NAME --no-cli-pager && aws s3api create-bucket --bucket $TF_BUCKET_NAME --region us-east-1 --no-cli-pager
 
-terraform init
-terraform apply -var="attach_tls_only_policy=false" -var="attach_tls_12_required_policy=false" -auto-approve 
-
-cd ../../
+# apply changes
+terraform init  -reconfigure -backend-config "bucket=$TF_BUCKET_NAME"  -backend-config "key=team/order.tfstate"  -var-file teams/order/terraform.tfvars
+terraform apply -var="attach_tls_only_policy=false" -var="attach_tls_12_required_policy=false" -auto-approve   -var-file teams/order/terraform.tfvars
 
 # upload test file
 aws s3 cp ./scripts/GitHub-logo.png s3://order-private-file-us-east-1-000000000000 --endpoint-url=http://localhost:4566
@@ -27,11 +30,15 @@ public_file_code=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:456
 if [[ $private_file_code != 403 ]] ; then
     echo "Private Bucket Policy Test Failed"
     exit -1
+else
+    echo "Private Bucket Policy Test Passed"
 fi
 
 if [[ $public_file_code != 200 ]] ; then
     echo "Public Bucket Policy Test Failed"
     exit -1
+else
+    echo "Public Bucket Policy Test Passed"
 fi
 
 # tear down

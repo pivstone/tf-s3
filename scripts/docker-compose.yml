@@ -18,6 +18,8 @@ services:
     image: ministackorg/ministack:latest
     ports:
       - "4566:4566"
+    environment:
+      - AUTH=true
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4566/_ministack/health')"]
       interval: 5s
